@@ -17,6 +17,7 @@ export default defineConfig({
   datasource: {
     // A placeholder keeps `prisma generate` working without a database
     // (e.g. during Docker image builds); commands that connect need the real URL.
-    url: process.env.DATABASE_URL ?? 'postgresql://placeholder:placeholder@localhost:5432/placeholder',
+    url:
+      process.env.DATABASE_URL ?? 'postgresql://placeholder:placeholder@localhost:5432/placeholder',
   },
 });
