@@ -7,12 +7,19 @@ import {
 } from 'fastify-type-provider-zod';
 import type { Env } from './config/env';
 import { healthRoutes } from './modules/health/health.routes';
+import { sessionRoutes } from './modules/sessions/session.routes';
+import type { SessionService } from './modules/sessions/session.service';
+import { userRoutes } from './modules/users/user.routes';
+import type { UserService } from './modules/users/user.service';
+import { authPlugin } from './plugins/auth';
 import { errorHandlerPlugin } from './plugins/error-handler';
 
 export type AppConfig = Pick<Env, 'LOG_LEVEL' | 'TRUST_PROXY'>;
 
 export interface AppDependencies {
   config: AppConfig;
+  userService: UserService;
+  sessionService: SessionService;
   checkDatabase: () => Promise<void>;
   /** Override the logger (tests pass `false`). */
   logger?: FastifyServerOptions['logger'];
@@ -45,10 +52,13 @@ export async function buildApp(deps: AppDependencies) {
   });
 
   await app.register(errorHandlerPlugin);
+  await app.register(authPlugin, { sessionService: deps.sessionService });
 
   await app.register(
     async (api) => {
       await api.register(healthRoutes, { checkDatabase: deps.checkDatabase });
+      await api.register(sessionRoutes, { sessionService: deps.sessionService });
+      await api.register(userRoutes, { userService: deps.userService });
     },
     { prefix: '/api' },
   );

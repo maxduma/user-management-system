@@ -14,7 +14,7 @@ import type {
 import type { NewUserData, User, UserChanges, UserWithCredentials } from './user.types';
 
 /** Explicit projection so the password hash is never loaded by accident. */
-const userSelect = {
+export const userSelect = {
   id: true,
   firstName: true,
   lastName: true,
