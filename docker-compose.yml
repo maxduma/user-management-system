@@ -1,5 +1,10 @@
 name: user-management-system
 
+# Full stack: PostgreSQL -> API (Fastify) -> web (nginx serving the SPA and
+# proxying /api). Open http://localhost:8080 once `docker compose up` is healthy.
+# Every value below can be overridden through the environment or a root .env
+# file (see .env.example).
+
 services:
   db:
     image: postgres:17-alpine
@@ -17,6 +22,42 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: ums-api:local
+    init: true
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ums}:${POSTGRES_PASSWORD:-ums}@db:5432/${POSTGRES_DB:-ums}?schema=public
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SESSION_TTL_HOURS: ${SESSION_TTL_HOURS:-24}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-300}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-20}
+      # The API is only reachable through nginx, so X-Forwarded-For can be trusted.
+      TRUST_PROXY: 'true'
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-true}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@example.com}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-Admin123!}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    image: ums-web:local
+    restart: unless-stopped
+    ports:
+      - '${WEB_PORT:-8080}:8080'
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   db-data:

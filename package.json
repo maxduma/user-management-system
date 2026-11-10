@@ -21,7 +21,9 @@
     "test": "npm run test --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "test:integration": "npm run test:integration -w @ums/api",
-    "e2e": "npm run e2e -w @ums/e2e"
+    "e2e": "npm run e2e -w @ums/e2e",
+    "docker:up": "docker compose up -d --build --wait",
+    "docker:down": "docker compose down"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
