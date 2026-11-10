@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router';
 import { useAuth, useAuthenticatedUser } from '../auth/auth-context';
 import { BrandMark } from '../components/BrandMark';
+import { ThemeModeToggle } from '../theme/ThemeModeToggle';
 
 /** Shell for authenticated pages: header with greeting and log out. */
 export function AppLayout() {
@@ -34,6 +35,7 @@ export function AppLayout() {
           >
             Hello {user.firstName}
           </Typography>
+          <ThemeModeToggle />
           <Button
             color="inherit"
             startIcon={<LogoutIcon />}
