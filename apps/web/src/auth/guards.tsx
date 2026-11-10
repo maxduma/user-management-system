@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router';
 import { FullPageLoader } from '../components/FullPageLoader';
 import { type AuthContextValue, useAuth } from './auth-context';
 
-export const HOME_PATH = '/welcome';
+export const HOME_PATH = '/dashboard';
 
 function SessionCheckFailed({ auth }: { auth: Extract<AuthContextValue, { status: 'error' }> }) {
   return (
