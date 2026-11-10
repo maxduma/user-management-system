@@ -27,12 +27,9 @@ export function AppLayout() {
         sx={{ borderBottom: 1, borderColor: 'divider' }}
       >
         <Toolbar sx={{ gap: 1.5 }}>
-          <BrandMark size="small" />
+          <BrandMark size="small" compactOnMobile />
           <Box sx={{ flexGrow: 1 }} />
-          <Typography
-            sx={{ fontWeight: 500, display: { xs: 'none', sm: 'block' } }}
-            data-testid="greeting"
-          >
+          <Typography noWrap sx={{ fontWeight: 500, minWidth: 0 }} data-testid="greeting">
             Hello {user.firstName}
           </Typography>
           <ThemeModeToggle />

@@ -1,7 +1,13 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { Avatar, Stack, Typography } from '@mui/material';
 
-export function BrandMark({ size = 'medium' }: { size?: 'small' | 'medium' }) {
+interface BrandMarkProps {
+  size?: 'small' | 'medium';
+  /** Hide the product name on narrow screens (keeps the header uncluttered). */
+  compactOnMobile?: boolean;
+}
+
+export function BrandMark({ size = 'medium', compactOnMobile = false }: BrandMarkProps) {
   const small = size === 'small';
   return (
     <Stack direction="row" spacing={1.25} sx={{ alignItems: 'center' }}>
@@ -11,7 +17,14 @@ export function BrandMark({ size = 'medium' }: { size?: 'small' | 'medium' }) {
       >
         <ManageAccountsIcon fontSize={small ? 'small' : 'medium'} />
       </Avatar>
-      <Typography variant={small ? 'subtitle1' : 'h6'} component="span" sx={{ fontWeight: 700 }}>
+      <Typography
+        variant={small ? 'subtitle1' : 'h6'}
+        component="span"
+        sx={{
+          fontWeight: 700,
+          display: compactOnMobile ? { xs: 'none', sm: 'inline' } : undefined,
+        }}
+      >
         User Management
       </Typography>
     </Stack>
