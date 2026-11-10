@@ -12,15 +12,20 @@ import type { SessionService } from './session.service';
 
 export interface SessionRoutesOptions {
   sessionService: SessionService;
+  /** Stricter per-IP limit for credential endpoints (brute-force protection). */
+  authRateLimitMax: number;
 }
 
 export const sessionRoutes: FastifyPluginAsyncZod<SessionRoutesOptions> = async (
   app,
-  { sessionService },
+  { sessionService, authRateLimitMax },
 ) => {
+  const authRateLimit = { max: authRateLimitMax, timeWindow: '1 minute' };
+
   app.post(
     '/auth/sign-up',
     {
+      config: { rateLimit: authRateLimit },
       schema: {
         tags: ['auth'],
         summary: 'Register a new user and open their first session',
@@ -37,6 +42,7 @@ export const sessionRoutes: FastifyPluginAsyncZod<SessionRoutesOptions> = async 
   app.post(
     '/sessions',
     {
+      config: { rateLimit: authRateLimit },
       schema: {
         tags: ['sessions'],
         summary: 'Sign in (create a new session)',

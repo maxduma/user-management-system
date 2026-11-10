@@ -13,8 +13,18 @@ import { userRoutes } from './modules/users/user.routes';
 import type { UserService } from './modules/users/user.service';
 import { authPlugin } from './plugins/auth';
 import { errorHandlerPlugin } from './plugins/error-handler';
+import { securityPlugin } from './plugins/security';
+import { swaggerPlugin } from './plugins/swagger';
 
-export type AppConfig = Pick<Env, 'LOG_LEVEL' | 'TRUST_PROXY'>;
+export type AppConfig = Pick<
+  Env,
+  | 'LOG_LEVEL'
+  | 'TRUST_PROXY'
+  | 'CORS_ORIGIN'
+  | 'RATE_LIMIT_MAX'
+  | 'AUTH_RATE_LIMIT_MAX'
+  | 'SWAGGER_ENABLED'
+>;
 
 export interface AppDependencies {
   config: AppConfig;
@@ -52,12 +62,23 @@ export async function buildApp(deps: AppDependencies) {
   });
 
   await app.register(errorHandlerPlugin);
+  await app.register(securityPlugin, {
+    corsOrigins: config.CORS_ORIGIN,
+    rateLimitMax: config.RATE_LIMIT_MAX,
+  });
+  if (config.SWAGGER_ENABLED) {
+    // Must be registered before the routes so it can collect their schemas.
+    await app.register(swaggerPlugin);
+  }
   await app.register(authPlugin, { sessionService: deps.sessionService });
 
   await app.register(
     async (api) => {
       await api.register(healthRoutes, { checkDatabase: deps.checkDatabase });
-      await api.register(sessionRoutes, { sessionService: deps.sessionService });
+      await api.register(sessionRoutes, {
+        sessionService: deps.sessionService,
+        authRateLimitMax: config.AUTH_RATE_LIMIT_MAX,
+      });
       await api.register(userRoutes, { userService: deps.userService });
     },
     { prefix: '/api' },
