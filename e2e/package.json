@@ -1,0 +1,16 @@
+{
+  "name": "@ums/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright end-to-end tests running against the full docker compose stack.",
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}
