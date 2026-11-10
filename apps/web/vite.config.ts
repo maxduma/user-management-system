@@ -15,14 +15,12 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true,
+    // Generated for error tracking, but not referenced from the bundle.
+    sourcemap: 'hidden',
     rollupOptions: {
       output: {
-        // Long-term cacheable vendor chunks.
-        manualChunks: {
-          react: ['react', 'react-dom', 'react-router'],
-          mui: ['@mui/material', '@emotion/react', '@emotion/styled'],
-        },
+        // Rarely-changing framework code in its own long-term cacheable chunk.
+        manualChunks: { react: ['react', 'react-dom', 'react-router'] },
       },
     },
   },
